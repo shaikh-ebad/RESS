@@ -1,0 +1,43 @@
+# Android Studio / IntelliJ
+.idea/
+*.iml
+
+# Gradle
+.gradle/
+build/
+**/build/
+
+# Local Android SDK configuration
+local.properties
+
+# APK / AAB build outputs
+*.apk
+*.aab
+
+# Native build files
+.externalNativeBuild/
+.cxx/
+
+# Kotlin
+.kotlin/
+
+# Generated files
+captures/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.log
+
+# Signing keys
+*.jks
+*.keystore
+
+# Local Claude settings
+.claude/
+
+# Local AI model - too large for GitHub
+app/src/main/assets/*.task

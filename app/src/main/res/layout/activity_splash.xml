@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- ===================================================== -->
+    <!-- BACKGROUND ARTWORK -->
+    <!-- ===================================================== -->
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/splash_background"
+        android:scaleType="centerCrop"
+        android:contentDescription="@null" />
+
+
+    <!-- ===================================================== -->
+    <!-- SPLASH CONTENT -->
+    <!-- ===================================================== -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingStart="28dp"
+        android:paddingEnd="28dp">
+
+
+        <!-- TOP SPACE -->
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.9" />
+
+
+        <!-- ================================================= -->
+        <!-- MESH NETWORK LOGO -->
+        <!-- ================================================= -->
+
+        <ImageView
+            android:id="@+id/ressLogo"
+            android:layout_width="220dp"
+            android:layout_height="180dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ress_logo"
+            android:scaleType="fitCenter"
+            android:contentDescription="RESS Logo" />
+
+
+        <!-- ================================================= -->
+        <!-- APP NAME -->
+        <!-- ================================================= -->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="RESS"
+            android:textColor="#FBE4D8"
+            android:textSize="42sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.04"
+            android:fontFamily="sans" />
+
+
+        <!-- ================================================= -->
+        <!-- TAGLINE -->
+        <!-- ================================================= -->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Connect Beyond Limits"
+            android:textColor="#DFB6B2"
+            android:textSize="16sp"
+            android:letterSpacing="0.03" />
+
+
+        <!-- ================================================= -->
+        <!-- FEATURES -->
+        <!-- ================================================= -->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:text="Offline   •   Secure   •   Decentralized"
+            android:textColor="#FBE4D8"
+            android:textSize="12sp"
+            android:letterSpacing="0.04" />
+
+
+        <!-- LOWER SPACE -->
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.2" />
+
+
+        <!-- ================================================= -->
+        <!-- PROGRESS BAR -->
+        <!-- ================================================= -->
+
+        <ProgressBar
+            android:id="@+id/splashProgress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="230dp"
+            android:layout_height="5dp"
+            android:max="100"
+            android:progress="65"
+            android:indeterminate="false"
+            android:progressTint="#FBE4D8"
+            android:backgroundTint="#854F6C" />
+
+
+        <!-- ================================================= -->
+        <!-- STATUS -->
+        <!-- ================================================= -->
+
+        <TextView
+            android:id="@+id/splashStatusText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="34dp"
+            android:text="Initializing network..."
+            android:textColor="#DFB6B2"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+</FrameLayout>
