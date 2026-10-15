@@ -1,1020 +1,328 @@
-```markdown
 # RESS — Connect Beyond Limits
 
-<p align="center">
-  <strong>Offline • Secure • Decentralized</strong>
-</p>
+**An Offline, Decentralized Person-to-Person Communication System Using ESP32 Mesh Networking**
 
-<p align="center">
-  An offline communication system using Android, ESP32 mesh networking, end-to-end encryption, and a local AI assistant.
-</p>
-
----
-
-## 📌 Overview
-
-**RESS** is an offline communication system designed to allow users to exchange messages without depending on the Internet or cellular networks.
-
-The system combines:
-
-- Android smartphones
-- ESP32-based mesh networking
-- Wi-Fi access points
-- ESP-NOW communication
-- TCP communication
-- End-to-end message encryption
-- Local message storage
-- An offline AI assistant
-
-A smartphone connects to a nearby ESP32 node through Wi-Fi. The ESP32 nodes communicate with each other using ESP-NOW and forward messages through the mesh until they reach the node connected to the destination phone.
-
-The message is encrypted on the Android device before entering the mesh network.
-
-> **Stay connected, even without the Internet.**
-
----
-
-# ✨ Features
-
-## 📡 Offline Communication
-
-RESS allows users to communicate without requiring a conventional Internet connection or cellular network.
-
-## 🌐 ESP32 Mesh Networking
-
-Multiple ESP32 nodes form a mesh network that allows communication to travel across multiple nodes.
-
-## 🔀 Dynamic Routing
-
-ESP32 nodes maintain routing information and determine the next hop toward a destination node.
-
-## 📱 Phone Discovery
-
-Phones connected to different ESP32 nodes can be discovered across the mesh network.
-
-## 💬 Person-to-Person Messaging
-
-Users communicate using unique phone IDs.
-
-Example:
-
-```text
-PHONE_001
-PHONE_002
-PHONE_003
-```
-
-The user does not need to manually select or manage ESP32 nodes.
-
-## 🔐 End-to-End Encryption
-
-Messages are encrypted on the Android device before transmission.
-
-Intermediate ESP32 nodes forward the encrypted data without modifying the ciphertext.
-
-## 🛡️ AES-GCM Encryption
-
-The Android application uses AES-GCM encryption, providing confidentiality and authentication for encrypted messages.
-
-## 🤖 Offline AI Assistant
-
-RESS includes a local AI assistant capable of operating without an Internet connection using a locally stored Gemma model.
-
-## 💾 Local Chat Storage
-
-Messages are stored locally on the Android device using Room Database.
-
-## 🎨 Custom RESS Interface
-
-The Android application includes a custom interface based on the RESS visual identity.
-
----
-
-# 🏗️ System Architecture
-
-RESS consists of three main layers:
-
-```text
-┌───────────────────────────────────────┐
-│           ANDROID APPLICATION         │
-│                                       │
-│  • User Interface                     │
-│  • Chat                               │
-│  • Phone Identity                     │
-│  • Message Encryption                 │
-│  • Room Database                      │
-│  • Local AI Assistant                 │
-│                                       │
-└───────────────────┬───────────────────┘
-                    │
-                    │ Wi-Fi / TCP
-                    │
-                    ▼
-┌───────────────────────────────────────┐
-│             ESP32 NODE                │
-│                                       │
-│  • Wi-Fi Access Point                 │
-│  • TCP Server                         │
-│  • Phone Registration                 │
-│  • Phone Discovery                    │
-│  • Routing                            │
-│  • Message Delivery                   │
-│                                       │
-└───────────────────┬───────────────────┘
-                    │
-                    │ ESP-NOW
-                    │
-                    ▼
-┌───────────────────────────────────────┐
-│            ESP32 MESH                 │
-│                                       │
-│       NODE_A                           │
-│       NODE_B                           │
-│       NODE_C                           │
-│       NODE_D                           │
-│                                       │
-└───────────────────────────────────────┘
-```
-
----
-
-# 🔄 How RESS Works
-
-## 1. Android Phone Connects to ESP32
-
-The smartphone connects to the Wi-Fi access point created by a nearby ESP32 node.
-
-For example:
-
-```text
-ESP32_MESH_A
-```
-
-The ESP32 provides the local network connection required by the Android application.
-
----
-
-## 2. Phone Registration
-
-The Android application registers its unique phone ID with the connected ESP32.
-
-Example:
-
-```text
-PHONE_001
-```
-
-The ESP32 associates the phone with its node.
-
-Example:
-
-```text
-PHONE_001 → NODE_A
-```
-
----
-
-## 3. Phone Discovery
-
-ESP32 nodes advertise information about phones connected to their nodes.
-
-For example:
-
-```text
-PHONE_001 → NODE_A
-PHONE_002 → NODE_D
-```
-
-This allows a phone connected to NODE_A to discover a phone connected to NODE_D.
-
----
-
-## 4. Message Encryption
-
-Before the message is transmitted to the ESP32, the Android application encrypts it.
-
-The ESP32 receives encrypted ciphertext rather than the original plaintext.
-
-Conceptually:
-
-```text
-Plaintext
-    ↓
-Android Encryption
-    ↓
-Ciphertext
-    ↓
-ESP32 Mesh
-```
-
----
-
-## 5. Destination Lookup
-
-The ESP32 determines which node currently hosts the destination phone.
-
-For example:
-
-```text
-PHONE_002 → NODE_D
-```
-
----
-
-## 6. Route Selection
-
-The source ESP32 checks its routing table to determine the next node.
-
-For example:
-
-```text
-NODE_A → NODE_B → NODE_C → NODE_D
-```
-
----
-
-## 7. Mesh Forwarding
-
-The encrypted message is forwarded from node to node using ESP-NOW.
-
-Intermediate nodes do not need to decrypt the message.
-
-```text
-NODE_A
-   ↓
-NODE_B
-   ↓
-NODE_C
-   ↓
-NODE_D
-```
-
----
-
-## 8. Destination Delivery
-
-When the message reaches NODE_D, the node checks whether the destination phone is connected.
-
-If the destination phone is:
-
-```text
-PHONE_002
-```
-
-the encrypted message is delivered to that Android device.
-
----
-
-## 9. Android Decryption
-
-The destination Android application decrypts the ciphertext and displays the original message.
-
-```text
-Ciphertext
-    ↓
-Android Decryption
-    ↓
-Original Message
-```
-
----
-
-# 📡 ESP32 Mesh Network
-
-The current prototype uses four ESP32 nodes:
-
-```text
-NODE_A
-NODE_B
-NODE_C
-NODE_D
-```
-
-Each node has its own Wi-Fi access point.
-
-Example:
-
-```text
-NODE_A → ESP32_MESH_A
-NODE_B → ESP32_MESH_B
-NODE_C → ESP32_MESH_C
-NODE_D → ESP32_MESH_D
-```
-
-The ESP32 nodes communicate with each other using **ESP-NOW**.
-
----
-
-# 🔀 Routing
-
-RESS uses routing information maintained by the ESP32 nodes.
-
-Each node can maintain information similar to:
-
-```text
-Destination    Next Hop    Hops
---------------------------------
-NODE_A         NODE_A      0
-NODE_B         NODE_B      1
-NODE_C         NODE_B      2
-NODE_D         NODE_C      3
-```
-
-The routing system allows messages to travel through multiple ESP32 nodes instead of requiring every phone to connect to the same ESP32.
-
----
-
-# 📱 Phone Discovery
-
-Phone discovery allows ESP32 nodes to share information about connected phones.
-
-Example:
-
-```text
-Phone ID       Node
-----------------------
-PHONE_001      NODE_A
-PHONE_002      NODE_D
-```
-
-This allows the source node to determine where the destination phone is located.
-
----
-
-# 💬 Message Flow Example
-
-Suppose:
-
-```text
-PHONE_001
-```
-
-is connected to:
-
-```text
-NODE_A
-```
-
-and:
-
-```text
-PHONE_002
-```
-
-is connected to:
-
-```text
-NODE_D
-```
-
-The communication path can be:
-
-```text
-PHONE_001
-    │
-    ▼
- NODE_A
-    │
-    ▼
- NODE_B
-    │
-    ▼
- NODE_C
-    │
-    ▼
- NODE_D
-    │
-    ▼
-PHONE_002
-```
-
-The response follows the routing system back toward the originating phone.
-
----
-
-# 🔐 Security
-
-RESS uses encryption on the Android side before messages enter the mesh network.
-
-The current Android implementation uses:
-
-```text
-AES
-GCM Mode
-256-bit Key
-12-byte Nonce
-128-bit Authentication Tag
-```
-
-The ESP32 nodes transport the encrypted data through the mesh.
-
-Intermediate ESP32 nodes do not need to decrypt the message.
-
-### Important Prototype Note
-
-The current encryption-key arrangement is designed for the academic prototype.
-
-A production implementation should use a secure key-exchange and key-management mechanism instead of relying on a static application-level key.
-
----
-
-# 🤖 Offline AI Assistant
-
-RESS includes a local AI assistant.
-
-The AI is designed to operate locally on the Android device rather than requiring an Internet connection.
-
-The project uses a Gemma model stored as a `.task` file.
-
-## Why the AI model is not included in GitHub
-
-The model file is approximately **529 MB**.
-
-GitHub's standard repository file limit is **100 MB per file**, so the model cannot be included directly in this repository.
-
-The model is therefore excluded from Git using `.gitignore`.
-
----
-
-# 🧠 AI Model Setup
-
-After cloning the project, the AI model must be added separately.
-
-The expected filename is:
-
-```text
-gemma3-1B-it-int4.task
-```
-
-Place it inside:
-
-```text
-app/src/main/assets/
-```
-
-The final structure should look like:
-
-```text
-RESS/
-│
-├── app/
-│   └── src/
-│       └── main/
-│           └── assets/
-│               └── gemma3-1B-it-int4.task
-│
-└── README.md
-```
-
-After adding the model, build the Android application normally.
-
-> The repository does not redistribute the model file. Obtain the required model separately from its appropriate source and comply with its license and usage terms.
-
----
-
-# 🧰 Technologies Used
-
-## Android
-
-- Kotlin
-- Android Studio
-- Android SDK
-- Room Database
-- TCP sockets
-- Wi-Fi networking
-- AES-256-GCM
-- Local AI inference
-
-## ESP32
-
-- ESP32 DevKit V1
-- Arduino framework
-- Wi-Fi
-- ESP-NOW
-- TCP server
-- Dynamic routing
-- Phone discovery
-
-## AI
-
-- Gemma 3 1B
-- Local inference
-- `.task` model format
-
----
-
-# 🔧 Hardware Requirements
-
-For the current prototype:
-
-| Component | Quantity |
-|---|---:|
-| ESP32 DevKit V1 | 4 |
-| Android smartphones | 2 or more |
-| USB data cable | 1 or more |
-| Computer | 1 |
-| Wi-Fi capable Android device | Required |
-
-The number of ESP32 nodes can be changed depending on the desired mesh topology.
-
----
-
-# 💻 Software Requirements
-
-You will need:
-
-- Android Studio
-- Android SDK
-- Kotlin support
-- Arduino IDE
-- ESP32 board support for Arduino
-- Git
-- Android smartphone with USB debugging enabled
-
----
-
-# 📥 Getting the Project
-
-Clone the repository:
-
-```bash
-git clone https://github.com/shaikh-ebad/RESS.git
-```
-
-Enter the project directory:
-
-```bash
-cd RESS
-```
-
-Open the project in Android Studio.
-
-Allow Gradle to synchronize the project.
-
----
-
-# 📱 Building the Android Application
-
-Open the project in Android Studio.
-
-Then select:
-
-```text
-Build → Make Project
-```
-
-To run the application:
-
-```text
-Run → Run 'app'
-```
-
-Connect an Android phone with USB debugging enabled, or use a compatible Android emulator.
-
----
-
-# 📡 ESP32 Setup
-
-The ESP32 firmware is responsible for:
-
-- Creating the Wi-Fi access point
-- Running the TCP server
-- Registering Android phones
-- Discovering phones
-- Discovering other ESP32 nodes
-- Maintaining routing information
-- Forwarding messages
-- Delivering messages
-- Sending delivery acknowledgements
-
-The current prototype uses:
-
-```text
-NODE_A
-NODE_B
-NODE_C
-NODE_D
-```
-
-Each board is configured with its corresponding node identity.
-
----
-
-# 🧩 ESP32 Communication
-
-Android communicates with the ESP32 using TCP.
-
-The ESP32 nodes communicate with each other using ESP-NOW.
-
-Therefore, RESS uses two communication layers:
-
-```text
-Android ↔ ESP32
-     Wi-Fi / TCP
-
-ESP32 ↔ ESP32
-     ESP-NOW
-```
-
-This combination allows phones to use normal Wi-Fi networking while the ESP32 nodes form the mesh backbone.
-
----
-
-# 📨 Message Packet
-
-The ESP32 message structure contains information such as:
-
-```text
-Message Type
-Sender Phone ID
-Receiver Phone ID
-Origin Node
-Destination Node
-Message ID
-TTL
-Encrypted Data
-```
-
-The encrypted data is carried inside the message packet.
-
-The ciphertext is forwarded without being modified by intermediate nodes.
-
----
-
-# ⏳ TTL and Duplicate Protection
-
-Messages contain a **TTL (Time To Live)** value.
-
-TTL helps prevent a packet from being forwarded indefinitely.
-
-The mesh also maintains information about previously seen messages.
-
-This helps prevent duplicate messages from being processed repeatedly.
-
----
-
-# ✅ Delivery Acknowledgement
-
-RESS supports delivery acknowledgements.
-
-When the destination node receives a message, an acknowledgement can be sent toward the originating node.
-
-Conceptually:
-
-```text
-PHONE_001
-    │
-    │ Message
-    ▼
-NODE_A → NODE_B → NODE_C → NODE_D
-                              │
-                              ▼
-                           PHONE_002
-
-PHONE_002
-    │
-    │ ACK
-    ▼
-NODE_D → NODE_C → NODE_B → NODE_A
-                              │
-                              ▼
-                         PHONE_001
-```
-
----
-
-# 💾 Local Database
-
-The Android application uses **Room Database** to store local message history.
-
-This provides persistent chat storage on the device.
-
-Messages can therefore remain available even when the mesh connection is temporarily unavailable.
-
----
-
-# 🗂️ Project Structure
-
-```text
-RESS/
-│
-├── app/
-│   ├── src/
-│   │   ├── androidTest/
-│   │   │
-│   │   └── main/
-│   │       ├── assets/
-│   │       │   └── gemma3-1B-it-int4.task
-│   │       │
-│   │       ├── java/
-│   │       │   └── com/example/offlinemeshchat/
-│   │       │       │
-│   │       │       ├── AppContextHolder.kt
-│   │       │       ├── AppDatabase.kt
-│   │       │       ├── ChatActivity.kt
-│   │       │       ├── ConnectionManagerHolder.kt
-│   │       │       ├── EncryptionHelper.kt
-│   │       │       ├── MainActivity.kt
-│   │       │       ├── MeshConnectionManager.kt
-│   │       │       ├── MeshProtocol.kt
-│   │       │       ├── Message.kt
-│   │       │       ├── MessageDao.kt
-│   │       │       ├── PhoneIdentity.kt
-│   │       │       └── SplashActivity.kt
-│   │       │
-│   │       │       └── ai/
-│   │       │           ├── AIAssistantActivity.kt
-│   │       │           ├── AIMessage.kt
-│   │       │           ├── AIMesssageDao.kt
-│   │       │           └── LocalAIAssistant.kt
-│   │       │
-│   │       └── res/
-│   │
-│   └── build.gradle.kts
-│
-├── gradle/
-│
-├── .gitignore
-├── build.gradle.kts
-├── gradle.properties
-├── gradlew
-├── gradlew.bat
-├── settings.gradle.kts
-└── README.md
-```
-
-> The AI model is excluded from the Git repository and must be added separately.
-
----
-
-# 🧭 Example Network
-
-A simple deployment can look like:
-
-```text
-                  NODE_B
-                 /      \
-                /        \
-           NODE_A        NODE_C
-                \        /
-                 \      /
-                  NODE_D
-```
-
-Phones can connect to different nodes:
-
-```text
-PHONE_001 → NODE_A
-
-PHONE_002 → NODE_D
-```
-
-The ESP32 routing system allows the phones to communicate across the mesh.
-
----
-
-# 🌍 Potential Applications
-
-RESS can demonstrate offline communication concepts in situations where normal connectivity is unavailable or unreliable.
-
-Possible applications include:
-
-- Remote areas
-- Hiking and camping
-- Educational demonstrations
-- Mesh networking research
-- Temporary communication networks
-- IoT experiments
-- Remote communities
-- Communication during network outages
-- Academic networking projects
-
-> RESS is an experimental prototype and is not a certified emergency communication system.
-
----
-
-# 🚧 Current Limitations
-
-RESS is currently an academic/project prototype.
-
-Some limitations include:
-
-- Static encryption-key arrangement
-- Limited ESP32 memory
-- ESP-NOW payload limitations
-- Limited routing-table size
-- Prototype-level routing
-- Limited route recovery
-- No production-grade key-management system
-- AI model must be downloaded separately
-- Communication range depends on the environment
-- ESP32 nodes require a power source
-- No certification for emergency communication
-
----
-
-# 🚀 Future Improvements
-
-Possible future improvements include:
-
-### 🔐 Security
-
-- Secure key exchange
-- Improved device authentication
-- Digital signatures
-- Secure key storage
-- Better identity management
-
-### 🌐 Networking
-
-- Automatic route expiration
-- Improved route recovery
-- Link-quality-based routing
-- Failed-node detection
-- Better packet retry mechanisms
-- Packet fragmentation
-
-### 💬 Communication
-
-- Group messaging
-- File transfer
-- Image transfer
-- Voice communication
-- Multimedia messaging
-
-### 🤖 AI
-
-- Improved local models
-- Better model management
-- More offline AI features
-- AI-assisted message composition
-- Local document assistance
-
----
-
-# 🎨 RESS Branding
-
-## Name
-
-**RESS**
-
-## Tagline
-
-**Connect Beyond Limits**
-
-## Feature Line
+RESS is a prototype communication system designed to enable person-to-person messaging without relying on the internet or centralized messaging servers. It combines an Android application with a network of four ESP32 devices to forward messages between phones connected to different nodes.
 
 **Offline • Secure • Decentralized**
 
-### Color Palette
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Objectives](#objectives)
+- [Key Features](#key-features)
+- [System Architecture](#system-architecture)
+- [Hardware Requirements](#hardware-requirements)
+- [Software and Technologies](#software-and-technologies)
+- [Network Configuration](#network-configuration)
+- [How It Works](#how-it-works)
+- [Message Routing](#message-routing)
+- [Security](#security)
+- [Local AI Assistant](#local-ai-assistant)
+- [Installation and Setup](#installation-and-setup)
+- [Testing](#testing)
+- [Limitations](#limitations)
+- [Future Scope](#future-scope)
+- [Team Members](#team-members)
+- [Acknowledgements](#acknowledgements)
+
+---
+
+## Overview
+
+Traditional messaging applications generally depend on internet connectivity and centralized infrastructure. RESS explores an alternative approach by using a local wireless network and ESP32 devices to relay messages between Android phones.
+
+Each ESP32 node provides a Wi-Fi access point for nearby phones. The Android application communicates with its connected node using TCP, while ESP32 nodes exchange messages with neighboring nodes through ESP-NOW.
+
+The Android application also maintains local chat history using Room persistence and includes an offline AI assistant designed to respond to supported queries without requiring cloud-based inference.
+
+RESS is an educational prototype intended to demonstrate offline communication, decentralized message forwarding, local data storage, and embedded wireless networking.
+
+## Objectives
+
+- Develop an Android application for offline person-to-person messaging.
+- Establish communication between Android phones and ESP32 nodes.
+- Forward messages between ESP32 nodes using ESP-NOW.
+- Implement basic route discovery and message forwarding.
+- Maintain local message history using Room.
+- Explore message acknowledgements and duplicate-message protection.
+- Implement prototype message encryption.
+- Integrate a locally running AI assistant into the Android application.
+
+## Key Features
+
+- **Offline messaging:** Send messages through the local ESP32 network without requiring internet access.
+- **Multi-node communication:** Relay messages across multiple ESP32 nodes.
+- **Phone-to-node communication:** Use local Wi-Fi and TCP to connect Android phones to ESP32 devices.
+- **ESP-NOW communication:** Exchange packets between ESP32 nodes.
+- **Message acknowledgements:** Track message delivery acknowledgements in the prototype.
+- **Route discovery:** Exchange routing information and select routes based on advertised metrics.
+- **Duplicate protection:** Use message identifiers to help prevent repeated processing of the same message.
+- **Local chat history:** Store messages on the Android device using Room.
+- **Prototype encryption:** Use AES-256-GCM for message encryption.
+- **Offline AI assistant:** Run a supported language model locally on Android.
+
+## System Architecture
+
+The system contains two main communication layers:
+
+1. **Android phone to ESP32:** Local Wi-Fi connection using TCP.
+2. **ESP32 to ESP32:** Wireless packet exchange using ESP-NOW.
+
+Example architecture:
 
 ```text
-Deep Plum       #190019
-Dark Purple     #2B124C
-Purple          #522B5B
-Mauve           #854F6C
-Dusty Pink      #DFB6B2
-Soft Cream      #FBE4D8
++------------------+                         +------------------+
+| Android Phone A  |                         | Android Phone B  |
+|                  |                         |                  |
+| Chat Application |                         | Chat Application |
+| Room Database    |                         | Room Database    |
++--------+---------+                         +--------+---------+
+         |                                            |
+     Wi-Fi / TCP                                  Wi-Fi / TCP
+         |                                            |
++--------v---------+      ESP-NOW              +------v-----------+
+|     NODE_A       | <------------------------> |      NODE_B      |
+| ESP32 DevKit V1  |                            | ESP32 DevKit V1  |
++------------------+                            +--------+--------+
+                                                        |
+                                                    ESP-NOW
+                                                        |
+                                               +--------v--------+
+                                               |      NODE_C     |
+                                               | ESP32 DevKit V1 |
+                                               +--------+--------+
+                                                        |
+                                                    ESP-NOW
+                                                        |
+                                               +--------v--------+
+                                               |      NODE_D     |
+                                               | ESP32 DevKit V1 |
+                                               +-----------------+
 ```
 
----
+This is a conceptual illustration of the architecture. The actual route taken by a message depends on the routing information available in the running network.
 
+## Hardware Requirements
 
-# 🧪 Testing
+- 4 × ESP32 DevKit V1 development boards
+- 2 or more Android phones for communication testing
+- USB cables for programming and powering ESP32 boards
+- A computer for Android development and ESP32 firmware development
 
-The system can be tested using multiple Android phones and ESP32 nodes.
+## Software and Technologies
 
-Example test:
+| Technology | Purpose |
+|---|---|
+| Android | Mobile application platform |
+| Kotlin/Android development tools | Android application implementation |
+| Room | Local message and chat persistence |
+| Wi-Fi | Phone-to-node wireless connection |
+| TCP | Communication between Android phones and their connected ESP32 nodes |
+| ESP-NOW | Wireless communication between ESP32 nodes |
+| Arduino IDE | ESP32 firmware development |
+| ESP32 Arduino Core 3.3.11 | ESP32 development environment used during testing |
+| AES-256-GCM | Prototype authenticated message encryption |
+| Gemma 3 1B Instruct (int4) | Local AI assistant model |
 
-```text
-Phone 1
-   │
-   ▼
-NODE_A
-   │
-   ▼
-NODE_B
-   │
-   ▼
-NODE_C
-   │
-   ▼
-NODE_D
-   │
-   ▼
-Phone 2
+The exact Android SDK, Gradle, Kotlin, and dependency versions should be taken from the project configuration.
+
+## Network Configuration
+
+The prototype uses four ESP32 nodes.
+
+| Node | ESP32 MAC Address |
+|---|---|
+| NODE_A | `34:5F:45:A7:EB:84` |
+| NODE_B | `44:1D:64:F3:3F:F4` |
+| NODE_C | `84:1F:E8:1B:9D:54` |
+| NODE_D | `84:1F:E8:1B:4C:E4` |
+
+**Network settings**
+
+| Parameter | Configuration |
+|---|---|
+| Wi-Fi mode | Access point |
+| Access point password | `12345678` |
+| Wi-Fi channel | 1 |
+| TCP port | `3333` |
+| Phone identity examples | `PHONE_001`, `PHONE_002` |
+| Inter-node communication | ESP-NOW |
+
+**Important:** These MAC addresses and network settings should be checked against the actual firmware and Serial Monitor output before deployment. ESP-NOW communication also depends on compatible channel configuration and peer setup.
+
+## How It Works
+
+### 1. Phone Connection
+
+The Android phone connects to the Wi-Fi access point provided by a nearby ESP32 node.
+
+### 2. Message Creation
+
+The user selects a recipient and enters a message in the Android application.
+
+### 3. Message Transmission
+
+The application prepares the message and sends it to its connected ESP32 node over TCP.
+
+### 4. Inter-Node Forwarding
+
+The ESP32 node checks the message destination and available routing information. If the recipient is not directly reachable, the node forwards the message toward the selected next hop using ESP-NOW.
+
+### 5. Message Reception
+
+The destination node forwards the message to the recipient's Android phone through the local TCP connection.
+
+### 6. Local Storage
+
+The Android application stores chat messages in its Room database, allowing conversation history to remain available locally.
+
+### 7. Acknowledgements
+
+The prototype uses message acknowledgements to provide feedback about message delivery or processing, depending on the acknowledgement stage implemented.
+
+## Message Routing
+
+RESS uses a basic distance-vector-like routing approach.
+
+- **HELLO messages:** Help nodes discover neighboring nodes.
+- **ROUTE advertisements:** Share information about reachable destinations.
+- **Route metrics:** Help nodes select among advertised routes.
+- **Message identifiers:** Support duplicate detection.
+- **Time to Live (TTL):** Limits how many forwarding steps a message may take.
+- **Acknowledgements:** Provide feedback for supported delivery stages.
+
+This is a prototype routing mechanism, not a complete production-grade mesh routing protocol. Route aging, robust link-failure recovery, and advanced link-quality metrics are limitations for future development.
+
+## Security
+
+RESS includes a prototype encryption mechanism using AES-256-GCM.
+
+AES-GCM provides encryption and authentication when implemented with correct key and nonce management. However, the current prototype uses a statically configured shared key rather than a complete secure key-establishment system.
+
+Consequently, RESS should **not be considered production-ready secure messaging**.
+
+Further work is required to implement secure key exchange, per-message nonce management, identity verification, secure provisioning, and comprehensive replay protection. Do not publish encryption keys, credentials, or other secrets in the repository.
+
+## Local AI Assistant
+
+RESS includes an offline AI assistant that runs locally on the Android device rather than on the ESP32 nodes.
+
+The project uses the `gemma3-1B-it-int4.task` model, approximately 529 MB in size. The model file is excluded from Git version control because of its size.
+
+The assistant is intended to answer supported queries without requiring cloud-based model inference. Actual functionality depends on the Android integration, model availability, and device resources.
+
+### Model Setup
+
+If the application requires the model asset:
+
+1. Obtain the correct model file from its authorized source.
+2. Follow the application's expected model-loading instructions.
+3. Place the model in the location expected by the application.
+4. Run the app and verify that the assistant loads successfully.
+
+The model is not included in this repository. Confirm the exact asset path and supported download source from the implementation before distributing setup instructions.
+
+## Installation and Setup
+
+### Prerequisites
+
+Install the tools required for the relevant parts of the project:
+
+- Android Studio
+- Android SDK components required by the project
+- Arduino IDE
+- ESP32 board support package
+- Four ESP32 DevKit V1 boards
+- Android phones for testing
+
+### Step 1: Clone the Repository
+
+```bash
+git clone https://github.com/shaikh-ebad/RESS.git
+cd RESS
 ```
 
-Test the following:
+### Step 2: Open the Android Project
 
-- ESP32 node startup
-- Android connection
-- Phone registration
-- Phone discovery
-- Cross-node messaging
-- Message encryption
-- Message decryption
-- Delivery acknowledgement
-- Local message storage
-- Offline AI functionality
+1. Open Android Studio.
+2. Select **Open** and choose the cloned repository or its Android project directory.
+3. Allow Gradle to sync.
+4. Resolve any missing SDK or dependency requirements reported by Android Studio.
 
+### Step 3: Configure the ESP32 Firmware
+
+1. Open the relevant ESP32 firmware sketch in Arduino IDE.
+2. Select the appropriate ESP32 board and port.
+3. Verify each node's identity and MAC address.
+4. Check the access point credentials, Wi-Fi channel, TCP port, and ESP-NOW peer configuration.
+5. Ensure routing and message-forwarding settings match the deployed topology.
+
+### Step 4: Flash the ESP32 Nodes
+
+Upload the correct firmware to each ESP32 board. Start the nodes and inspect their Serial Monitor output to confirm that initialization, peer discovery, and routing behave as expected.
+
+### Step 5: Configure the Android Application
+
+Verify that the app uses the correct node connection settings and phone identity. Ensure that the phone is connected to the intended ESP32 access point.
+
+### Step 6: Install and Run
+
+Build and install the Android application on the test phones. Connect the phones to their respective nodes and test communication across the network.
+
+**Note:** The exact firmware sketch paths, Android module paths, and build commands depend on the repository structure and should be confirmed in the checked-out source.
+
+## Testing
+
+The project has been developed to explore the following scenarios:
+
+| Test Area | Purpose |
+|---|---|
+| Phone-to-node connection | Verify local Wi-Fi/TCP connectivity |
+| Node discovery | Check whether nodes discover neighboring nodes |
+| Cross-node messaging | Verify message forwarding between nodes |
+| Acknowledgements | Check the acknowledgement behavior implemented by the firmware |
+| Duplicate protection | Verify handling of repeated message identifiers |
+| Chat persistence | Confirm messages remain in local Room storage |
+| Incoming-message UI | Verify received messages appear in the conversation interface |
+| Reconnection | Check behavior after a phone or node reconnects |
+| Offline AI | Confirm the assistant works with the local model and without cloud inference |
+
+Cross-node discovery, messaging-related UI updates, and reconnection behavior have been addressed during development. Formal test evidence, detailed test results, and performance measurements should be added from actual test runs before presenting this project as fully validated.
+
+## Limitations
+
+- Communication depends on the availability and configuration of the ESP32 nodes.
+- The prototype does not provide internet-independent communication beyond its reachable wireless network.
+- Routing and recovery mechanisms are limited compared with mature mesh networking protocols.
+- The shared-key encryption approach does not provide complete production-grade key management.
+- Packet size and payload constraints limit the amount of data that can be carried in a single ESP-NOW message.
+- The offline AI model requires local storage, compatible runtime support, and sufficient device resources.
+- Reliability, scalability, range, throughput, and battery consumption require additional systematic testing.
+
+## Future Scope
+
+Possible improvements include:
+
+- More robust route discovery and route-failure recovery.
+- Better handling of nodes joining or leaving the network.
+- Secure key exchange and device authentication.
+- Improved acknowledgement and retransmission mechanisms.
+- Message fragmentation and reassembly for larger messages.
+- Additional offline features, such as file sharing and emergency broadcasts.
+- Battery optimization and low-power operation.
+- Performance testing across larger node networks.
+- Improved monitoring and network diagnostics.
+- Enhanced local AI capabilities and model management.
+  
 ---
 
-# 📦 APK
+## Repository
 
-A built APK can be generated from Android Studio.
+GitHub: https://github.com/shaikh-ebad/RESS
 
-Use:
+## Disclaimer
 
-```text
-Build → Build Bundle(s) / APK(s) → Build APK(s)
-```
-
-The debug APK is normally generated under:
-
-```text
-app/build/outputs/apk/debug/
-```
-
-The APK can then be installed on compatible Android devices for testing.
-
----
-
-# 👨‍💻 Project Information
-
-**Project Name:** RESS
-
-**Tagline:** Connect Beyond Limits
-
-**Category:** Offline Communication / Mesh Networking / Android / IoT / Local AI
-
-**Core Technologies:**
-
-```text
-Android
-Kotlin
-ESP32
-ESP-NOW
-Wi-Fi
-TCP
-AES-256-GCM
-Room Database
-Gemma
-```
-
----
-
-# 📚 Educational Purpose
-
-RESS demonstrates concepts from several areas of computer science and electronics, including:
-
-- Computer networking
-- Wireless communication
-- Mesh networking
-- Mobile application development
-- Cryptography
-- Database management
-- Internet of Things
-- Embedded systems
-- Artificial intelligence
-- Distributed systems
-
-The project is intended to demonstrate how independent devices can cooperate to provide communication without relying on traditional Internet infrastructure.
-
----
-
-# ⚠️ Disclaimer
-
-RESS is an educational and experimental prototype.
-
-It is intended to demonstrate concepts related to:
-
-- Offline communication
-- ESP32 mesh networking
-- Android development
-- Encryption
-- Embedded systems
-- Local AI
-
-It should **not** be considered a replacement for certified emergency communication infrastructure or commercially deployed secure communication systems.
-
----
-
-# 📄 License
-
-This project does not currently specify an open-source license.
-
-If you intend to allow others to freely modify, distribute, or reuse the project, consider adding an appropriate open-source license.
-
----
-
-# ⭐ RESS
-
-**Connect Beyond Limits**
-
-```text
-OFFLINE • SECURE • DECENTRALIZED
-```
-
-Built to explore what communication can look like when the Internet isn't available.
-```
+RESS is an educational prototype developed to explore offline communication using Android and ESP32 devices. It is not intended to replace production messaging systems or provide emergency-grade communication guarantees. Security, reliability, and performance depend on the implementation and deployment environment.
