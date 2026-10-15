@@ -25,8 +25,6 @@ RESS is a prototype communication system designed to enable person-to-person mes
 - [Testing](#testing)
 - [Limitations](#limitations)
 - [Future Scope](#future-scope)
-- [Team Members](#team-members)
-- [Acknowledgements](#acknowledgements)
 
 ---
 
